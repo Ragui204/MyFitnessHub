@@ -1,4 +1,4 @@
-package com.example.myfitnesshub.ui.theme
+package com.example.myfitnesshub.ui
 
 import androidx.compose.ui.graphics.Color
 

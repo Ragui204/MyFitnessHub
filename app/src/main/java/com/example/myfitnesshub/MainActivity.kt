@@ -4,44 +4,25 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.myfitnesshub.ui.theme.MyFitnessHubTheme
+import com.example.myfitnesshub.ui.MainScreen
+import com.example.myfitnesshub.ui.MyFitnessHubTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Makes the app content go behind the status/navigation bars for a modern look
         enableEdgeToEdge()
+
         setContent {
             MyFitnessHubTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "MyFitnessHub",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                // This is where the magic happens: calling your navigation shell
+                MainScreen()
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Welcome to $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MyFitnessHubTheme {
-        Greeting("MyFitnessHub")
-    }
-}
+/* Note: You can safely delete the Greeting() and GreetingPreview()
+   functions that were here previously.
+*/
