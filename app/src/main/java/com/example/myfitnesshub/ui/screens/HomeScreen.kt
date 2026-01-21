@@ -11,6 +11,6 @@ import androidx.compose.ui.Modifier
 @Composable
 fun HomeScreen() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "Home Dashboard")
+        Text(text = "Coming Soon!")
     }
 }

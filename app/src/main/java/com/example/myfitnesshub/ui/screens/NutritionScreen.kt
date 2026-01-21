@@ -11,6 +11,6 @@ import androidx.compose.ui.Modifier
 @Composable
 fun NutritionScreen() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "Nutrition & Food Entry")
+        Text(text = "Coming soon!!")
     }
 }

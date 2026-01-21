@@ -12,10 +12,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF00FF9D),
-    secondary = Color(0xFF121212),
-    surface = Color(0xFF1E1E1E),
-    onBackground = Color.White
+    primary = Color(0xFF00FF9D),    // Neon Green
+    background = Color(0xFF121212), // Deep Black
+    surface = Color(0xFF1E1E1E),    // Card Gray
+    secondary = Color(0xFFD4E157),  // Neon Yellow
+    onBackground = Color.White,
+    onSurface = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(

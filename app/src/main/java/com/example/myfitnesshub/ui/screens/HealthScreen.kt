@@ -37,7 +37,7 @@ fun HealthScreen(viewModel: HealthViewModel = viewModel()) {
         when (sdkStatus) {
             HealthConnectClient.SDK_AVAILABLE -> {
                 if (isGranted) {
-                    Text("✅ All Systems Go! Connected to Health Data.")
+                    Text("✅ Coming Soon!")
                 } else {
                     // This shows only if they denied permissions at startup
                     Text("Permissions are missing. Please enable them in Settings.")
