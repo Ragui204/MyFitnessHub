@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -40,6 +39,16 @@ import com.example.myfitnesshub.viewmodel.Exercise
 import com.example.myfitnesshub.viewmodel.WorkoutSet
 // Also add this for the list to work:
 import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.material3.Icon // The component itself
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Icon
 
 @Composable
 fun WorkoutScreen(viewModel: WorkoutViewModel = viewModel()) {
@@ -164,14 +173,54 @@ fun CalendarPanel(onCalendarClick: () -> Unit) {
 
 @Composable
 fun PlanCard(plan: WorkoutPlan) {
+
+    var expanded by remember { mutableStateOf(false) }
+
     Card(
-        modifier = Modifier.fillMaxWidth(). padding(vertical = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clickable{ expanded = !expanded },
         colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = plan.title, color = Color.White, style = typography.titleMedium)
-            Text(text = "${plan.exercises.size} Exercises", color = Color.Gray)
+            //Header Row with Title and Arrow
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(text = plan.title, color = Color.White, style = typography.titleMedium)
+                    Text(text = "${plan.exercises.size} Exercises", color = Color.Gray, style = typography.bodySmall)
+                }
+                //Arrow Symbol
+                Icon(
+                    imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = "Expand",
+                    tint = Color(0xFF00FF9D) // Neon Green to match your theme
+                )
+            }
+            //Expanded Content
+            if (expanded) {
+                Spacer(modifier = Modifier.height(12.dp))
+                plan.exercises.forEach { exercise ->
+                    Column(modifier = Modifier.padding(bottom = 8.dp)) {
+                        Text(text = exercise.name, color = Color.White, fontWeight = FontWeight.Bold)
+
+                        //Show sets and reps
+                        exercise.sets.forEachIndexed {  index, set ->
+                            Text(
+                                text = "Set ${index + 1}: ${set.weight}kg x ${set.reps} reps",
+                                color = Color.Gray,
+                                style = typography.bodySmall,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
