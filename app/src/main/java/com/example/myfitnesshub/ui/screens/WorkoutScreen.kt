@@ -49,6 +49,8 @@ fun WorkoutScreen(viewModel: WorkoutViewModel = viewModel()) {
     val selectedTab by viewModel.selectedTabIndex.collectAsState()
     val tabs = viewModel.tabs
 
+    val currentPlans by viewModel.plans.collectAsState()
+
     Column(Modifier.fillMaxSize().background(Color(0xFF121212))) {
         TabRow(
             selectedTabIndex = selectedTab,
@@ -105,7 +107,7 @@ fun WorkoutScreen(viewModel: WorkoutViewModel = viewModel()) {
 
                 // List items: The actual self-made plans
                 // Note: You need to define 'plans' in your WorkoutViewModel first
-                items(viewModel.plans) { plan ->
+                items(currentPlans) { plan ->
                     PlanCard(plan = plan)
                 }
             }

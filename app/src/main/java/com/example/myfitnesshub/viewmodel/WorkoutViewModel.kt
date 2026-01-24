@@ -42,17 +42,17 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
     val tabs = listOf("Routine", "Exercises", "Stats")
 
     //list to hold your self-made plans
-    val plans = listOf(
-        WorkoutPlan(
-            title = "Push Day",
-            exercises = listOf(
-                Exercise("Bench Press", listOf(WorkoutSet(80.0, 8), WorkoutSet(80.0, 8))),
-                Exercise("Tricep Dips", listOf(WorkoutSet(0.0, 12)))
-            )
-        )
-    )
+    private val _plans = MutableStateFlow(listOf(
+        WorkoutPlan("Push Day", listOf(Exercise("Bench Press", listOf(WorkoutSet(80.0, 8)))))
+    ))
+    val plans: StateFlow<List<WorkoutPlan>> = _plans
     var allExercises by mutableStateOf<List<ExerciseCategory>>(emptyList())
         private set
+
+    fun addNewPlan(title: String, selectedExercises: List<Exercise>) {
+        val newPlan = WorkoutPlan(title, exercises = selectedExercises)
+        _plans.value = _plans.value + newPlan
+    }
 
     init {
         loadExercises()
