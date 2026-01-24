@@ -1,0 +1,54 @@
+[
+  {
+    "category": "Chest",
+    "exercises": [
+      "Barbell Bench Press", "Dumbbell Bench Press", "Incline Barbell Bench Press",
+      "Incline Dumbbell Press", "Decline Bench Press", "Chest Fly (Machine)",
+      "Dumbbell Fly", "Cable Crossover", "Push-ups", "Dips (Chest Focus)",
+      "Pec Deck", "Floor Press", "Svend Press"
+    ]
+  },
+  {
+    "category": "Back",
+    "exercises": [
+      "Deadlift (Conventional)", "Sumo Deadlift", "Pull-ups", "Chin-ups",
+      "Lat Pulldown (Wide Grip)", "Seated Cable Row", "Bent Over Barbell Row",
+      "One-Arm Dumbbell Row", "T-Bar Row", "Face Pulls", "Back Extension",
+      "Straight Arm Pulldown", "Rack Pulls"
+    ]
+  },
+  {
+    "category": "Shoulders",
+    "exercises": [
+      "Overhead Press (Barbell)", "Dumbbell Shoulder Press", "Arnold Press",
+      "Dumbbell Lateral Raise", "Front Raise", "Bent Over Rear Delt Fly",
+      "Upright Row", "Push Press", "Shrugs (Dumbbell)", "Shrugs (Barbell)"
+    ]
+  },
+  {
+    "category": "Legs (Quads & Hamstrings)",
+    "exercises": [
+      "Back Squat (High Bar)", "Front Squat", "Leg Press", "Hack Squat",
+      "Leg Extension", "Romanian Deadlift", "Leg Curl (Seated)",
+      "Leg Curl (Lying)", "Bulgarian Split Squat", "Goblet Squat",
+      "Lunges", "Step-ups", "Sumo Squat"
+    ]
+  },
+  {
+    "category": "Arms (Biceps & Triceps)",
+    "exercises": [
+      "Barbell Curl", "Dumbbell Alternating Curl", "Hammer Curl", "Preacher Curl",
+      "Concentration Curl", "Tricep Pushdown (Cable)", "Skull Crushers",
+      "Overhead Tricep Extension", "Close Grip Bench Press", "Tricep Dips",
+      "Zottman Curl", "21s"
+    ]
+  },
+  {
+    "category": "Abs & Core",
+    "exercises": [
+      "Plank", "Hanging Leg Raise", "Russian Twist", "Ab Wheel Rollout",
+      "Crunch", "Bicycle Crunch", "Mountain Climbers", "Woodchoppers (Cable)",
+      "V-Ups", "Toe Touches"
+    ]
+  }
+]

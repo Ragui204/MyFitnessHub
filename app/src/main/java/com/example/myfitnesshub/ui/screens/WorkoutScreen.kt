@@ -1,7 +1,5 @@
 package com.example.myfitnesshub.ui.screens
 
-import android.R.attr.text
-import android.icu.util.Calendar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,10 +33,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myfitnesshub.viewmodel.WorkoutViewModel
 import com.example.myfitnesshub.viewmodel.WorkoutPlan
-import com.example.myfitnesshub.viewmodel.Exercise
-import com.example.myfitnesshub.viewmodel.WorkoutSet
-// Also add this for the list to work:
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,7 +42,7 @@ import androidx.compose.material3.Icon // The component itself
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 
 @Composable
 fun WorkoutScreen(viewModel: WorkoutViewModel = viewModel()) {
@@ -116,8 +110,41 @@ fun WorkoutScreen(viewModel: WorkoutViewModel = viewModel()) {
                 }
             }
         }
+        if (selectedTab == 1) {
+            Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                //Search Bar
+                OutlinedTextField(
+                    value = "",
+                    onValueChange = {},
+                    label = { Text("Search exercises...", color = Color.Gray) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                LazyColumn {
+                    viewModel.allExercises.forEach { category ->
+                        item {
+                            Text(
+                                text = category.category,
+                                color = Color(0xFF00FF9D),
+                                style = typography.titleMedium,
+                                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                            )
+                        }
+
+                        items(category.exercises) { exerciseName ->
+                            ExerciseListItem(name = exerciseName)
+                        }
+                    }
+                }
+            }
+
+        }
     }
 }
+
 
 @Composable
 fun CalendarPanel(onCalendarClick: () -> Unit) {
@@ -222,5 +249,29 @@ fun PlanCard(plan: WorkoutPlan) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ExerciseListItem(name: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Placeholder for the "Video"
+        Box(
+            modifier = Modifier
+                .size(50.dp)
+                .background(Color(0xFF2C2C2C), RoundedCornerShape(8.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(name.take(1), color = Color.White) // Shows first letter
+        }
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Text(text = name, color = Color.White, style = typography.bodyLarge)
     }
 }

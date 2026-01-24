@@ -2,9 +2,16 @@ package com.example.myfitnesshub.viewmodel
 
 import android.view.View
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import android.app.Application
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import androidx.lifecycle.AndroidViewModel
 
 // Add this data class above your ViewModel class
 data class WorkoutSet(
@@ -22,14 +29,19 @@ data class WorkoutPlan(
     val exercises: List<Exercise> = emptyList()
 )
 
+data class ExerciseCategory(
+    val category: String,
+    val exercises: List<String>
+)
 
 
-class WorkoutViewModel : ViewModel() {
+
+class WorkoutViewModel(application: Application) : AndroidViewModel(application) {
     private val _selectedTabIndex = MutableStateFlow(0)
     val selectedTabIndex: StateFlow<Int> = _selectedTabIndex
     val tabs = listOf("Routine", "Exercises", "Stats")
 
-    // ADD THIS: A list to hold your self-made plans
+    //list to hold your self-made plans
     val plans = listOf(
         WorkoutPlan(
             title = "Push Day",
@@ -37,14 +49,31 @@ class WorkoutViewModel : ViewModel() {
                 Exercise("Bench Press", listOf(WorkoutSet(80.0, 8), WorkoutSet(80.0, 8))),
                 Exercise("Tricep Dips", listOf(WorkoutSet(0.0, 12)))
             )
-        ),
-        WorkoutPlan(
-            title = "Legs",
-            exercises = listOf(
-                Exercise("Squats", listOf(WorkoutSet(100.0, 5)))
-            )
         )
     )
+    var allExercises by mutableStateOf<List<ExerciseCategory>>(emptyList())
+        private set
+
+    init {
+        loadExercises()
+    }
+
+    private fun loadExercises() {
+        try {
+            // 1. Read the file from assets
+            val jsonString = getApplication<Application>().assets
+                .open("exercises.json")
+                .bufferedReader()
+                .use { it.readText() }
+
+            // 2. Parse JSON string into List<ExerciseCategory>
+            val listType = object : TypeToken<List<ExerciseCategory>>() {}.type
+            allExercises = Gson().fromJson(jsonString, listType)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            allExercises = emptyList()
+        }
+    }
 
     fun selectedTab(index: Int) {
         _selectedTabIndex.value = index
