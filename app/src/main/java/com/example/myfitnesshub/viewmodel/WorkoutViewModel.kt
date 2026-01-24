@@ -49,9 +49,14 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
     var allExercises by mutableStateOf<List<ExerciseCategory>>(emptyList())
         private set
 
-    fun addNewPlan(title: String, selectedExercises: List<Exercise>) {
-        val newPlan = WorkoutPlan(title, exercises = selectedExercises)
+
+    fun saveNewPlan(title: String, exercises: List<Exercise>) {
+        val newPlan = WorkoutPlan(title, exercises)
         _plans.value = _plans.value + newPlan
+    }
+
+    fun deletePlan(plan: WorkoutPlan) {
+        _plans.value = _plans.value.filter { it != plan }
     }
 
     init {

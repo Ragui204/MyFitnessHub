@@ -18,6 +18,7 @@ import com.example.myfitnesshub.navigation.Screen
 import com.example.myfitnesshub.ui.screens.*
 import com.example.myfitnesshub.R
 
+
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
