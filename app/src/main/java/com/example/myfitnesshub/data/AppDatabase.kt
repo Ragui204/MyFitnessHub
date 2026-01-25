@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.example.myfitnesshub.data.dao.*
 import com.example.myfitnesshub.data.entities.*
+import com.example.myfitnesshub.viewmodel.WorkoutPlan
 
 @Database(
     entities = [
@@ -14,11 +16,13 @@ import com.example.myfitnesshub.data.entities.*
         WorkoutSession::class,
         ExerciseSet::class,
         FoodEntry::class,
-        SleepRecord::class
+        SleepRecord::class,
+        WorkoutPlan::class
     ],
     version = 1,
     exportSchema = false
 )
+@TypeConverters(Converters::class)
 abstract  class AppDatabase : RoomDatabase() {
 
     // Define abstract methods to access each DAO

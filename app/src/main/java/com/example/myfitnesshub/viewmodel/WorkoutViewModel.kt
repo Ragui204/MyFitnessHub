@@ -12,8 +12,20 @@ import android.app.Application
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.example.myfitnesshub.data.AppDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 // Add this data class above your ViewModel class
+
+
+
 data class WorkoutSet(
     val weight: Double,
     val reps: Int
@@ -23,8 +35,9 @@ data class Exercise(
     val name: String,
     val sets: List<WorkoutSet>
 )
-
+@Entity(tableName = "workout_plans")
 data class WorkoutPlan(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val title: String,
     val exercises: List<Exercise> = emptyList()
 )
@@ -42,21 +55,24 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
     val tabs = listOf("Routine", "Exercises", "Stats")
 
     //list to hold your self-made plans
-    private val _plans = MutableStateFlow(listOf(
-        WorkoutPlan("Push Day", listOf(Exercise("Bench Press", listOf(WorkoutSet(80.0, 8)))))
-    ))
-    val plans: StateFlow<List<WorkoutPlan>> = _plans
+    private val workoutDao = AppDatabase.getDatabase(application).workoutDao()
+    val plans: StateFlow<List<WorkoutPlan>> = workoutDao.getAllPlans()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     var allExercises by mutableStateOf<List<ExerciseCategory>>(emptyList())
         private set
 
 
     fun saveNewPlan(title: String, exercises: List<Exercise>) {
-        val newPlan = WorkoutPlan(title, exercises)
-        _plans.value = _plans.value + newPlan
+        viewModelScope.launch(Dispatchers.IO) {
+            val dao = AppDatabase.getDatabase(getApplication()).workoutDao()
+            dao.insertPlan(WorkoutPlan(title = title, exercises = exercises))
+        }
     }
 
     fun deletePlan(plan: WorkoutPlan) {
-        _plans.value = _plans.value.filter { it != plan }
+        viewModelScope.launch(Dispatchers.IO) {
+            workoutDao.deletePlan(plan)
+        }
     }
 
     init {
