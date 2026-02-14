@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -45,8 +47,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -54,20 +58,25 @@ import com.example.myfitnesshub.viewmodel.Exercise
 import com.example.myfitnesshub.viewmodel.WorkoutPlan
 import com.example.myfitnesshub.viewmodel.WorkoutSet
 import com.example.myfitnesshub.viewmodel.WorkoutViewModel
+import androidx.compose.foundation.lazy.items
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WorkoutScreen(viewModel: WorkoutViewModel = viewModel()) {
+fun WorkoutScreen(navController: NavController, viewModel: WorkoutViewModel = viewModel()) {
     val selectedTab by viewModel.selectedTabIndex.collectAsState()
     val tabs = viewModel.tabs
 
     val currentPlans by viewModel.plans.collectAsState()
 
-    val sheetState = rememberModalBottomSheetState()
-    var showSheet by remember { mutableStateOf(false) }
+    //val sheetState = rememberModalBottomSheetState()
+    //var showSheet by remember { mutableStateOf(false) }
     var newPlanName by remember { mutableStateOf("") }
 // This will hold the exercises the user picks for the NEW plan
     var selectedExercisesForNewPlan by remember { mutableStateOf(mutableListOf<Exercise>()) }
+
+    var totalWeeks by remember { mutableStateOf("4") }
+    var daysPerWeek by remember { mutableStateOf(3) }
 
     Column(Modifier
         .fillMaxSize()
@@ -119,7 +128,7 @@ fun WorkoutScreen(viewModel: WorkoutViewModel = viewModel()) {
                         Text(
                             text = "+ Create",
                             color = Color(0xFF00FF9D), // Neon Green
-                            modifier = Modifier.clickable { showSheet = true }
+                            modifier = Modifier.clickable { navController.navigate("create_plan_step1") }
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
@@ -167,64 +176,6 @@ fun WorkoutScreen(viewModel: WorkoutViewModel = viewModel()) {
                 }
             }
 
-        }
-        if (showSheet) {
-            ModalBottomSheet(
-                onDismissRequest = { showSheet = false },
-                sheetState = sheetState,
-                containerColor = Color(0xFF1E1E1E)
-            ) {
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp)
-                    .height(600.dp)) {
-                    Text("Create New Plan", color = Color.White, style = typography.headlineSmall)
-
-                    OutlinedTextField(
-                        value = newPlanName,
-                        onValueChange = { newPlanName = it },
-                        label = { Text("Plan Name (e.g. Leg Day)") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Text("Select Exercises", color = Color.Gray, modifier = Modifier.padding(vertical = 10.dp))
-
-                    // Reuse your exercise list here
-                    LazyColumn(modifier = Modifier.weight(1f)) {
-                        viewModel.allExercises.forEach { category ->
-                            item { Text(category.category, color = Color(0xFF00FF9D)) }
-                            items(category.exercises) { exerciseName ->
-                                Row(Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        // Logic to add exercise with default 1 set of 0kg x 0 reps
-                                        val newEx =
-                                            Exercise(exerciseName, listOf(WorkoutSet(0.0, 0)))
-                                        selectedExercisesForNewPlan.add(newEx)
-                                    }
-                                    .padding(8.dp)) {
-                                    Text(exerciseName, color = Color.White)
-                                }
-                            }
-                        }
-                    }
-
-                    Button(
-                        onClick = {
-                            viewModel.saveNewPlan(newPlanName, selectedExercisesForNewPlan)
-                            showSheet = false
-                            newPlanName = ""
-                            selectedExercisesForNewPlan = mutableListOf()
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00FF9D))
-                    ) {
-                        Text(text = "Save Plan", color = Color.Black)
-                    }
-                }
-            }
         }
     }
 }

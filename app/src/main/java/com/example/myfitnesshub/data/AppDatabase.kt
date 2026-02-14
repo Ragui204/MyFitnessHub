@@ -19,7 +19,7 @@ import com.example.myfitnesshub.viewmodel.WorkoutPlan
         SleepRecord::class,
         WorkoutPlan::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

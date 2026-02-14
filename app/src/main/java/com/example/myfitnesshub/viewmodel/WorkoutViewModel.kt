@@ -35,10 +35,18 @@ data class Exercise(
     val name: String,
     val sets: List<WorkoutSet>
 )
+
+data class WorkoutDay(
+    val dayName: String = "Day 1" ,
+    val exercises: List<Exercise> = emptyList(),
+    val restTimerSeconds: Int = 60
+)
 @Entity(tableName = "workout_plans")
 data class WorkoutPlan(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val title: String,
+    val totalWeeks: Int = 4,
+    val daysPerWeek: Int = 3,
     val exercises: List<Exercise> = emptyList()
 )
 
@@ -62,10 +70,10 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
         private set
 
 
-    fun saveNewPlan(title: String, exercises: List<Exercise>) {
+    fun saveNewPlan(title: String, totalWeeks: Int, daysPerWeek: Int, exercises: List<Exercise>) {
         viewModelScope.launch(Dispatchers.IO) {
             val dao = AppDatabase.getDatabase(getApplication()).workoutDao()
-            dao.insertPlan(WorkoutPlan(title = title, exercises = exercises))
+            dao.insertPlan(WorkoutPlan(title = title, totalWeeks = totalWeeks, daysPerWeek = daysPerWeek, exercises = exercises))
         }
     }
 

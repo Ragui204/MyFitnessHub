@@ -11,19 +11,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF00FF9D),    // Neon Green
-    background = Color(0xFF121212), // Deep Black
-    surface = Color(0xFF1E1E1E),    // Card Gray
-    secondary = Color(0xFFD4E157),  // Neon Yellow
+val DarkColorScheme = darkColorScheme(
+    primary = bronzeAccent,    // Neon Green
+    background = black, // Deep Black
+    surface = steelGray,    // Card Gray
+    secondary = deepCharcoal,  // Neon Yellow
     onBackground = Color.White,
     onSurface = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -40,7 +37,7 @@ private val LightColorScheme = lightColorScheme(
 fun MyFitnessHubTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
