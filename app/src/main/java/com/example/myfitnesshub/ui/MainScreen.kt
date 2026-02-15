@@ -34,7 +34,8 @@ fun MainScreen() {
     //list of routes that should be full screen
     val fullScreenRoutes = listOf(
         "create_plan_step1",
-        "create_plan_step2/{days}"
+        "create_plan_step2/{days}",
+        "create_plan_step3/{days}/{weeks}"
     )
     // Check if we should do full screen
     val isFullScreen = currentRoute in fullScreenRoutes
