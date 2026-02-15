@@ -283,7 +283,7 @@ fun PlanCard(plan: WorkoutPlan, onDelete: () -> Unit) {
             ) {
                 Column {
                     Text(text = plan.title, color = Color.White, style = typography.titleMedium)
-                    Text(text = "${plan.exercises.size} Exercises", color = Color.Gray, style = typography.bodySmall)
+                    Text(text = "${plan.workoutDays.size} Exercises", color = Color.Gray, style = typography.bodySmall)
                 }
                 //Arrow Symbol
                 Icon(
@@ -293,24 +293,6 @@ fun PlanCard(plan: WorkoutPlan, onDelete: () -> Unit) {
                 )
             }
             //Expanded Content
-            if (expanded) {
-                Spacer(modifier = Modifier.height(12.dp))
-                plan.exercises.forEach { exercise ->
-                    Column(modifier = Modifier.padding(bottom = 8.dp)) {
-                        Text(text = exercise.name, color = Color.White, fontWeight = FontWeight.Bold)
-
-                        //Show sets and reps
-                        exercise.sets.forEachIndexed {  index, set ->
-                            Text(
-                                text = "Set ${index + 1}: ${set.weight}kg x ${set.reps} reps",
-                                color = Color.Gray,
-                                style = typography.bodySmall,
-                                modifier = Modifier.padding(start = 8.dp)
-                            )
-                        }
-                    }
-                }
-            }
         }
     }
 }

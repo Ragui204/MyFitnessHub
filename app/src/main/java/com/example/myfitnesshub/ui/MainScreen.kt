@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,11 +21,13 @@ import com.example.myfitnesshub.navigation.Screen
 import com.example.myfitnesshub.ui.screens.*
 import com.example.myfitnesshub.R
 import androidx.navigation.NavController
+import com.example.myfitnesshub.viewmodel.WorkoutViewModel
 
 
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
+    val viewModel: WorkoutViewModel = viewModel()
     //Routes should not show the bottom bar
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -114,18 +117,23 @@ fun MainScreen() {
                 enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left) },
                 popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right) }
             ) { backStackEntry ->
-                //val weeks = backStackEntry.arguments?.getString("weeks")?.toInt() ?: 4
                 val days = backStackEntry.arguments?.getString("days")?.toInt() ?: 3
-                //val title = backStackEntry.arguments?.getString("title") ?: ""
+
 
                 CreatePlanStep2Screen(navController, days)
             }
 
             composable(
-                route = "create_plan_step3/{days}/{weeks}",
+                route = "create_plan_step3/{days}/{weeks}", // Match this exactly
                 enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left) },
                 popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right) }
-            ) {  }
+            ) { backStackEntry ->
+                val days = backStackEntry.arguments?.getString("days")?.toInt() ?: 3
+                val weeks = backStackEntry.arguments?.getString("weeks")?.toInt() ?: 4
+
+                // Title is not in the route anymore because we will type it in Step 3
+                CreatePlanStep3Screen(navController, viewModel, days, weeks)
+            }
         }
     }
 }

@@ -47,7 +47,7 @@ data class WorkoutPlan(
     val title: String,
     val totalWeeks: Int = 4,
     val daysPerWeek: Int = 3,
-    val exercises: List<Exercise> = emptyList()
+    val workoutDays: List<WorkoutDay> = emptyList()
 )
 
 data class ExerciseCategory(
@@ -70,10 +70,15 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
         private set
 
 
-    fun saveNewPlan(title: String, totalWeeks: Int, daysPerWeek: Int, exercises: List<Exercise>) {
+    fun saveNewPlan(title: String, weeks: Int, daysCount: Int, days: List<WorkoutDay>) {
         viewModelScope.launch(Dispatchers.IO) {
-            val dao = AppDatabase.getDatabase(getApplication()).workoutDao()
-            dao.insertPlan(WorkoutPlan(title = title, totalWeeks = totalWeeks, daysPerWeek = daysPerWeek, exercises = exercises))
+            val newPlan = WorkoutPlan(
+                title = title,
+                totalWeeks = weeks,
+                daysPerWeek = daysCount,
+                workoutDays = days
+            )
+            workoutDao.insertPlan(newPlan)
         }
     }
 
