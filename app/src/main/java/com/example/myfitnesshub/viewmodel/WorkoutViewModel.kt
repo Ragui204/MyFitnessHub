@@ -82,6 +82,16 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun getNextPlanName() : String {
+        val currentPlans = plans.value
+        var count = 1
+        while (currentPlans.any { it.title.equals("Plan $count", ignoreCase = true) }) {
+            count ++
+        }
+
+        return "Plan $count"
+    }
+
     fun deletePlan(plan: WorkoutPlan) {
         viewModelScope.launch(Dispatchers.IO) {
             workoutDao.deletePlan(plan)

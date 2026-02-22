@@ -27,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -56,12 +57,16 @@ import androidx.navigation.NavController
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import com.example.myfitnesshub.viewmodel.Exercise
 import com.example.myfitnesshub.viewmodel.WorkoutDay
 import com.example.myfitnesshub.viewmodel.WorkoutSet
 import com.example.myfitnesshub.viewmodel.WorkoutViewModel
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun CreatePlanStep1Screen(navController: NavController) {
@@ -224,20 +229,59 @@ fun CreatePlanStep3Screen(
     weeks: Int,
     //title: String
 ) {
-    // 1. Initialize the days with default "Day 1", "Day 2"...
+    // 1. Set plan title.
+    var planTitle by remember { mutableStateOf(viewModel.getNextPlanName()) }
+    // 2. Initialize the days with default "Day 1", "Day 2"...
     val workoutDays = remember {
         mutableStateListOf(*Array(daysCount) { WorkoutDay(dayName = "Day ${it + 1}") })
     }
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     var showExercisePicker by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxSize().background(Color(0xFF121212)).statusBarsPadding()) {
+    Column(modifier = Modifier.fillMaxSize().background(Color.Black).statusBarsPadding()) {
+        //-- TITLE INPUT --
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Black)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically // Keeps the icon and text aligned
+        ) {
+            TextField(
+                value = planTitle,
+                onValueChange = { planTitle = it },
+                placeholder = { Text("Plan Name", color = Color.Gray) },
+                modifier = Modifier.weight(1f), // Takes up available space
+                textStyle = TextStyle(
+                    color = Color.White,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Black,
+                    unfocusedContainerColor = Color.Black,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    cursorColor = Color(0xFF00FF9D) // Neon Green cursor
+                )
+            )
+
+            // THE PEN ICON
+            Icon(
+                imageVector = Icons.Default.Edit, // You might need to import androidx.compose.material.icons.filled.Edit
+                contentDescription = "Edit Title",
+                tint = Color.Gray.copy(alpha = 0.6f),
+                modifier = Modifier.size(20.dp)
+            )
+        }
         // --- TOP TABS ---
         ScrollableTabRow(
             selectedTabIndex = selectedTabIndex,
             containerColor = Color.Black,
             contentColor = Color(0xFF00FF9D), // Alpha Progression Neon Green
-            edgePadding = 16.dp
+            edgePadding = 16.dp,
+            divider = {} //removes default white line under tabs
         ) {
             workoutDays.forEachIndexed { index, day ->
                 Tab(
@@ -246,10 +290,27 @@ fun CreatePlanStep3Screen(
                     text = { Text(day.dayName, color = if(selectedTabIndex == index) Color.White else Color.Gray) }
                 )
             }
+            // 2. THE ADD BUTTON (as a Tab)
+            Tab(
+                selected = false,
+                onClick = {
+                    val nextDayNumber = workoutDays.size + 1
+                    workoutDays.add(WorkoutDay(dayName = "Day $nextDayNumber"))
+                    selectedTabIndex = workoutDays.size - 1
+                },
+                text = {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add Day",
+                        tint = Color(0xFF00FF9D),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            )
         }
 
         // --- EXERCISE LIST FOR CURRENT TAB ---
-        LazyColumn(modifier = Modifier.weight(1f).padding(16.dp)) {
+        LazyColumn(modifier = Modifier.weight(1f).background(Color.Black).padding(16.dp)) {
             item {
                 Button(
                     onClick = { showExercisePicker = true },
