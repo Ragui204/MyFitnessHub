@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -67,6 +68,7 @@ import com.example.myfitnesshub.viewmodel.WorkoutSet
 import com.example.myfitnesshub.viewmodel.WorkoutViewModel
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
+import com.example.myfitnesshub.viewmodel.ExerciseCategory
 
 @Composable
 fun CreatePlanStep1Screen(navController: NavController) {
@@ -287,7 +289,12 @@ fun CreatePlanStep3Screen(
                 Tab(
                     selected = selectedTabIndex == index,
                     onClick = { selectedTabIndex = index },
-                    text = { Text(day.dayName, color = if(selectedTabIndex == index) Color.White else Color.Gray) }
+                    text = {
+                        Text(
+                            day.dayName,
+                            color = if (selectedTabIndex == index) Color.White else Color.Gray
+                        )
+                    }
                 )
             }
             // 2. THE ADD BUTTON (as a Tab)
@@ -311,48 +318,141 @@ fun CreatePlanStep3Screen(
 
         // --- EXERCISE LIST FOR CURRENT TAB ---
         LazyColumn(modifier = Modifier.weight(1f).background(Color.Black).padding(16.dp)) {
-            item {
-                Button(
-                    onClick = { showExercisePicker = true },
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2C2C2C))
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = null)
-                    Text(" Add Exercise to ${workoutDays[selectedTabIndex].dayName}")
-                }
-            }
-
-            itemsIndexed(workoutDays[selectedTabIndex].exercises) { exerciseIndex, exercise ->
+            //Display added index exercises
+            itemsIndexed(workoutDays[selectedTabIndex].exercises) { index, exercise ->
                 ExerciseEditCard(
                     exercise = exercise,
                     onUpdate = { updatedExercise ->
-                        // Update the specific exercise in the specific tab
-                        val updatedList = workoutDays[selectedTabIndex].exercises.toMutableList()
-                        updatedList[exerciseIndex] = updatedExercise
-                        workoutDays[selectedTabIndex] = workoutDays[selectedTabIndex].copy(exercises = updatedList)
+                        val currentDay = workoutDays[selectedTabIndex]
+                        val newList = currentDay.exercises.toMutableList()
+                        newList[index] = updatedExercise
+                        workoutDays[selectedTabIndex] = currentDay.copy(exercises = newList)
+                    },
+                    onDelete = {
+                        val currentDay = workoutDays[selectedTabIndex]
+                        val newList = currentDay.exercises.toMutableList()
+                        newList.removeAt(index)
+                        workoutDays[selectedTabIndex] = currentDay.copy(exercises = newList)
                     }
                 )
+            }
+            item {
+                Button(
+                    onClick = { showExercisePicker = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp), // Added padding for spacing from last card
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF1A1A1A)
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = Color(0xFF00FF9D)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        "Add Exercise to ${workoutDays[selectedTabIndex].dayName}",
+                        color = Color.White
+                    )
+                }
             }
         }
 
         // --- BOTTOM SAVE BUTTON ---
         Button(
+            enabled = planTitle.isNotBlank(),
             onClick = {
+                viewModel.saveNewPlan(
+                    title = planTitle,
+                    weeks = weeks,
+                    daysCount = workoutDays.size,
+                    days = workoutDays.toList()
+                )
+                navController.navigate("workout_main") {
+                    popUpTo("workout_main") { inclusive = true }
+                }
 
             },
-            modifier = Modifier.fillMaxWidth().padding(16.dp).height(56.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00FF9D))
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .height(56.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF00FF9D)
+            ),
+            shape = RoundedCornerShape(12.dp)
         ) {
-            Text("Complete Plan", color = Color.Black, fontWeight = FontWeight.Bold)
+            Text(
+                text = "Complete Plan",
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleMedium
+            )
         }
     }
 
     // Exercise Picker Logic (Connects to your ViewModel's loadExercises list)
     if (showExercisePicker) {
         // You can use a ModalBottomSheet or a Dialog here to show allExercises
+        ExercisePickerDialog(
+            allCategories = viewModel.allExercises,
+            onDismiss = { showExercisePicker = false },
+            onSelect = { exerciseName ->
+                val currentDay = workoutDays[selectedTabIndex]
+                val newExercise = Exercise(
+                    name = exerciseName,
+                    sets = List(3) { WorkoutSet(weight = 0.0, reps = 8) }
+                )
+                val newList = currentDay.exercises.toMutableList()
+                newList.add(newExercise)
+                workoutDays[selectedTabIndex] = currentDay.copy(exercises = newList)
+                showExercisePicker = false
+            }
+
+        )
     }
 }
 
+@Composable
+fun ExercisePickerDialog(
+    allCategories: List<ExerciseCategory>,
+    onDismiss: () -> Unit,
+    onSelect: (String) -> Unit
+) {
+    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier.fillMaxWidth(0.9f).fillMaxHeight(0.7f),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF1A1A1A)),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Select Exercise", color = Color.White, style = typography.titleLarge)
+                Spacer(modifier = Modifier.height(16.dp))
+                LazyColumn {
+                    allCategories.forEach { category ->
+                        item {
+                            Text(category.category, color = Color(0xFF00FF9D), style = typography.labelLarge, modifier = Modifier.padding(vertical = 8.dp))
+                        }
+                        items(category.exercises) { exerciseName ->
+                            Text(
+                                text = exerciseName,
+                                color = Color.White,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onSelect(exerciseName) }
+                                    .padding(vertical = 12.dp, horizontal = 8.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 @Composable
 fun NumberStepper(
     label: String,
@@ -391,35 +491,46 @@ fun NumberStepper(
     }
 }
 @Composable
-fun ExerciseEditCard(exercise: Exercise, onUpdate: (Exercise) -> Unit) {
+fun ExerciseEditCard(
+    exercise: Exercise,
+    onUpdate: (Exercise) -> Unit,
+    onDelete: () -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1A1A1A)) // Matching black theme
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(exercise.name, color = Color.White, style = MaterialTheme.typography.titleMedium)
-                Text("Default: 3 Sets x 10 Reps", color = Color.Gray, style = MaterialTheme.typography.labelSmall)
+                Text(exercise.name, color = Color.White, style = typography.titleMedium)
+                // Delete button
+                Text(
+                    "Remove",
+                    color = Color.Red.copy(alpha = 0.7f),
+                    style = typography.labelSmall,
+                    modifier = Modifier.clickable { onDelete() }
+                )
             }
 
-            // Sets/Reps Editor
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                // Sets Input
-                NumberStepper(label = "Sets", value = exercise.sets.size) { newValue ->
-                    val newSets = List(newValue) { WorkoutSet(0.0, 10) }
-                    onUpdate(exercise.copy(sets = newSets))
+            // Sets
+            NumberStepper(label = "Sets", value = exercise.sets.size) { newValue ->
+                val newSets = List(newValue) {
+                    // Keep existing weight/reps if possible, else default to 8
+                    exercise.sets.getOrNull(0) ?: WorkoutSet(0.0, 8)
                 }
+                onUpdate(exercise.copy(sets = newSets))
+            }
 
-                Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
-                // Reps Input (taking the first set as reference)
-                NumberStepper(label = "Reps", value = exercise.sets.firstOrNull()?.reps ?: 10) { newValue ->
-                    val newSets = exercise.sets.map { it.copy(reps = newValue) }
-                    onUpdate(exercise.copy(sets = newSets))
-                }
+            // Reps (updating the first set's reps for simplicity)
+            val currentReps = exercise.sets.firstOrNull()?.reps ?: 8
+            NumberStepper(label = "Reps", value = currentReps) { newValue ->
+                val newSets = exercise.sets.map { it.copy(reps = newValue) }
+                onUpdate(exercise.copy(sets = newSets))
             }
         }
     }

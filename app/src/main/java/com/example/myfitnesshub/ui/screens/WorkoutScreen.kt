@@ -136,7 +136,7 @@ fun WorkoutScreen(navController: NavController, viewModel: WorkoutViewModel = vi
 
                 // List items: The actual self-made plans
                 // Note: You need to define 'plans' in your WorkoutViewModel first
-                items(currentPlans) { plan ->
+                items(currentPlans, key = { it.id }) { plan ->
                     PlanCard(plan = plan,
                              onDelete = { viewModel.deletePlan(plan) }
                         )

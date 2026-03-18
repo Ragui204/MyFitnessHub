@@ -65,7 +65,9 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
     //list to hold your self-made plans
     private val workoutDao = AppDatabase.getDatabase(application).workoutDao()
     val plans: StateFlow<List<WorkoutPlan>> = workoutDao.getAllPlans()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+        .stateIn(scope = viewModelScope,
+        started = SharingStarted.Lazily,
+        initialValue = emptyList())
     var allExercises by mutableStateOf<List<ExerciseCategory>>(emptyList())
         private set
 

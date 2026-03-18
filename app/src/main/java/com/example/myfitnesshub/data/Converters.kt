@@ -21,11 +21,13 @@ class Converters {
 
     // 2. Converter for WorkoutDays (REQUIRED for your new multi-day logic)
     @TypeConverter
-    fun fromWorkoutDayList(value: List<WorkoutDay>): String = gson.toJson(value)
+    fun fromWorkoutDayList(value: List<WorkoutDay>): String {
+        return Gson().toJson(value)
+    }
 
     @TypeConverter
     fun toWorkoutDayList(value: String): List<WorkoutDay> {
         val listType = object : TypeToken<List<WorkoutDay>>() {}.type
-        return gson.fromJson(value, listType) ?: emptyList()
+        return Gson().fromJson(value, listType) ?: emptyList()
     }
 }
